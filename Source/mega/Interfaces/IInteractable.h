@@ -5,7 +5,7 @@
 #include "IInteractable.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(BlueprintType)
+UINTERFACE(MinimalAPI)
 class UIInteractable : public UInterface {
 	GENERATED_BODY()
 };
@@ -16,8 +16,9 @@ class UIInteractable : public UInterface {
 class MEGA_API IIInteractable {
 	GENERATED_BODY()
 
+public:
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
-
-	void Interact();
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void Interact(APawn* InstigatorPawn);
 public:
 };

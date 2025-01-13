@@ -4,16 +4,41 @@
 #include "Components/ActorComponent.h"
 #include "InteractableComponent.generated.h"
 
+class UUserWidget;
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class MEGA_API UInteractableComponent : public UActorComponent {
 	GENERATED_BODY()
-
 public:
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 	UInteractableComponent();
+	
+	void PrimaryInteract(); // call this from input
 
 protected:
 	virtual void BeginPlay() override;
+	
+	void TraceUnderCursor();
 
-public:
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void Interact(AActor* InFocus);
+
+	UPROPERTY()
+	AActor* FocusedActor;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trace")
+	float InteractDistance = 500.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trace")
+	float InteractRadius = 50.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trace")
+	TEnumAsByte<ECollisionChannel> CollisionChannel = ECC_WorldDynamic;
+
+	/*UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> DefaultWidgetClass; // change widget template later
+
+	UPROPERTY()
+	UUserWidget* DefaultWidgetInstance;*/
+
 };
