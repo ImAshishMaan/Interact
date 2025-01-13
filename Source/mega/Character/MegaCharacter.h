@@ -5,9 +5,11 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputAction.h"
 #include "CoreMinimal.h"
+#include "Animation/AnimInstance.h"
 #include "mega/Interfaces/AnimationInterface.h"
 #include "MegaCharacter.generated.h"
 
+class UInteractableComponent;
 class UInputAction;
 class UInputMappingContext;
 
@@ -61,6 +63,9 @@ public:
 	UInputAction* JumpAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputAction* Interact;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputMappingContext* DefaultMappingContext;
 
 	void AddMappingContext();
@@ -69,10 +74,14 @@ public:
 	void Look(const FInputActionValue& Value);
 	void StartJumping();
 	virtual void StopJumping() override;
+	void PrimaryInteract();
 	
 
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere)
+	UInteractableComponent* InteractableComponent;
 
 public:
 	virtual void Tick(float DeltaTime) override;

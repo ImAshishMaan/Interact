@@ -7,10 +7,14 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/LocalPlayer.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "mega/ActorComponent/InteractableComponent.h"
 #include "mega/Interfaces/AnimationInterface.h"
 
 AMegaCharacter::AMegaCharacter() {
 	PrimaryActorTick.bCanEverTick = true;
+
+	InteractableComponent = CreateDefaultSubobject<UInteractableComponent>(TEXT("InteractableComponent"));
+	
 }
 
 
@@ -53,6 +57,7 @@ void AMegaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMegaCharacter::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AMegaCharacter::StartJumping);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AMegaCharacter::StopJumping);
+		EnhancedInputComponent->BindAction(Interact, ETriggerEvent::Completed, this, &AMegaCharacter::PrimaryInteract);
 	}
 }
 
@@ -174,4 +179,8 @@ void AMegaCharacter::StartJumping() {
 
 void AMegaCharacter::StopJumping() {
 	Super::StopJumping();
+}
+
+void AMegaCharacter::PrimaryInteract() {
+	InteractableComponent->PrimaryInteract(this);
 }

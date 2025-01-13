@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameFramework/Character.h"
 #include "InteractableComponent.generated.h"
 
 class UUserWidget;
@@ -14,14 +15,17 @@ public:
 
 	UInteractableComponent();
 	
-	void PrimaryInteract(); // call this from input
+	void PrimaryInteract(ACharacter* Character); // call this from input
 
 protected:
 	virtual void BeginPlay() override;
 	
 	void TraceUnderCursor();
 
-	void Interact(AActor* InFocus);
+	void Interact(AActor* InFocus, ACharacter* Character);
+
+	UPROPERTY()
+	AActor* LastFocusActor;
 
 	UPROPERTY()
 	AActor* FocusedActor;
