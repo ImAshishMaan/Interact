@@ -74,8 +74,7 @@ void UInteractableComponent::TraceUnderCursor() {
 			AActor* HitActor = Hit.GetActor();
 			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, HitActor->GetName());
 			if(HitActor) {
-				// check for interfaces
-				// set focused actor
+				//if(HitActor->Implements<UBP_InteractableBP>) {
 			}
 		}
 		// if focused show default ui 
