@@ -74,7 +74,7 @@ void UInteractableComponent::TraceUnderCursor() {
 
 		for(FHitResult Hit: Hits) {
 			AActor* HitActor = Hit.GetActor();
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, HitActor->GetName());
+			//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, HitActor->GetName());
 			if(HitActor) {
 				if(HitActor->Implements<UIInteractable>()) {
 					FocusedActor = HitActor;
