@@ -14,6 +14,7 @@ class MEGA_API AGameHUD : public AHUD {
 
 public:
 	virtual void DrawHUD() override;
+	void DrawCrosshair(UTexture2D* TextureToDraw, FVector2D& ViewPortSize); // call this for crosshair drawing at run time
 
 	UPROPERTY(EditDefaultsOnly)
 	UTexture2D* CrosshairTexture;

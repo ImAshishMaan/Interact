@@ -24,6 +24,8 @@ protected:
 
 	void Interact(AActor* InFocus, ACharacter* Character);
 
+	void ShowCrosshairUI(AActor* InFocus);
+
 	UPROPERTY()
 	AActor* LastFocusActor;
 
@@ -38,11 +40,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Trace")
 	TEnumAsByte<ECollisionChannel> CollisionChannel = ECC_WorldDynamic;
-
-	/*UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> DefaultWidgetClass; // change widget template later
-
-	UPROPERTY()
-	UUserWidget* DefaultWidgetInstance;*/
+	
 
 };

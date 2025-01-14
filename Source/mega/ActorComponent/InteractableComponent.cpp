@@ -1,8 +1,10 @@
 #include "InteractableComponent.h"
+#include "DrawDebugHelpers.h"
 #include "Engine/Engine.h"
 #include "Engine/GameViewportClient.h"
 #include "Kismet/GameplayStatics.h"
 #include "mega/Character/MegaCharacter.h"
+#include "mega/HUD/GameHUD.h"
 #include "mega/Interfaces/IInteractable.h"
 
 UInteractableComponent::UInteractableComponent() {
@@ -38,16 +40,31 @@ void UInteractableComponent::Interact(AActor* InFocus, ACharacter* Character) {
 	IIInteractable::Execute_Interact(InFocus, OwnerCharacter);
 }
 
+void UInteractableComponent::ShowCrosshairUI(AActor* InFocus) {
+	if(InFocus == nullptr) return;
+
+	if(IIInteractable::Execute_GetInteractionType(InFocus) == EInteractionType::CrosshairUI) {
+		AGameHUD* GameHUD = Cast<AGameHUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+		if(GameHUD) {
+			// Replace with actual functionality for showing the crosshair UI
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, "Interact UI");
+		}
+	}
+}
+
 void UInteractableComponent::TraceUnderCursor() {
-	FVector2D viewport;
+	FVector2D ViewportSize;
 	if(GEngine && GEngine->GameViewport) {
-		GEngine->GameViewport->GetViewportSize(viewport);
+		GEngine->GameViewport->GetViewportSize(ViewportSize);
+	} else {
+		return; // Exit early if we can't get the viewport size
 	}
 
-	FVector2D CrosshairLocation(viewport.X / 2, viewport.Y / 2);
+	FVector2D CrosshairLocation(ViewportSize.X / 2, ViewportSize.Y / 2);
 	FVector CrosshairWorldPosition;
 	FVector CrosshairWorldDirection;
 
+	// Deproject the screen position to a world position and direction
 	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
 		UGameplayStatics::GetPlayerController(this, 0),
 		CrosshairLocation,
@@ -57,32 +74,30 @@ void UInteractableComponent::TraceUnderCursor() {
 
 	if(bScreenToWorld) {
 		FVector Start = CrosshairWorldPosition;
-
 		FVector End = Start + (CrosshairWorldDirection * InteractDistance);
 
-		FCollisionObjectQueryParams ObjectQueryParams;
-		ObjectQueryParams.AddObjectTypesToQuery(CollisionChannel);
-
-		FCollisionShape Shape;
-		Shape.SetSphere(InteractRadius);
-
-		TArray<FHitResult> Hits;
-
-		bool bHit = GetWorld()->SweepMultiByObjectType(Hits, Start, End, FQuat::Identity, ObjectQueryParams, Shape);
+		FHitResult HitResult;
+		bool bHit = GetWorld()->LineTraceSingleByChannel(
+			HitResult,
+			Start,
+			End,
+			ECC_Visibility
+		);
 
 		FocusedActor = nullptr;
 
-		for(FHitResult Hit: Hits) {
-			AActor* HitActor = Hit.GetActor();
-			//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, HitActor->GetName());
-			if(HitActor) {
-				if(HitActor->Implements<UIInteractable>()) {
-					FocusedActor = HitActor;
-					break;
-				}
+		if(bHit) {
+			AActor* HitActor = HitResult.GetActor();
+			if(HitActor && HitActor->Implements<UIInteractable>()) {
+				FocusedActor = HitActor;
+				// Show default UI or interact prompt if needed
+				ShowCrosshairUI(FocusedActor);
 			}
 		}
 
-		// if focused show default ui 
+		// Debug: Visualize the trace
+		if(false) {
+			DrawDebugLine(GetWorld(), Start, End, bHit ? FColor::Green : FColor::Red, false, 1.0f, 0, 1.0f);
+		}
 	}
 }
